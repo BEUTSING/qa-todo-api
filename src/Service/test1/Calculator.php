@@ -18,4 +18,9 @@ class Calculator
     {
         return $number > 0;
     }
+
+    public function divide(int $a, int $b): float
+    {
+      return $a / $b;
+    }
 }
