@@ -12,11 +12,11 @@ class Todoservice
     {
     }
 
-     public function getTodoTitle(int $id): ?string
+     public function getTodo(int $id)
     {
         $todo = $this->todoRepository->find($id);
 
-        return $todo?->getTitle();
+        return $todo;
     }
 }
 
