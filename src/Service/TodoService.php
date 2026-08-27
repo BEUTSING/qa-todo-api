@@ -14,7 +14,7 @@ class Todoservice
 
      public function getTodo(int $id)
     {
-        $todo = $this->todoRepository->find($id);
+         $todo = $this->todoRepository->find($id);
 
         return $todo;
     }
