@@ -2,9 +2,10 @@
 
 namespace App\Service;
 
+use App\Entity\Todo;
 use App\Repository\TodoRepository;
 
-class Todoservice
+class TodoService
 {
     public  function __construct(
         private  TodoRepository $todoRepository
@@ -12,11 +13,23 @@ class Todoservice
     {
     }
 
-     public function getTodo(int $id)
-    {
-         $todo = $this->todoRepository->find($id);
+    //  public function getTodo(int $id)
+    // {
+    //      $todo = $this->todoRepository->find($id);
 
-        return $todo;
+    //     return $todo;
+    // }
+
+    public function getTodo(int $id): Todo
+{
+    $todo = $this->todoRepository->find($id);
+
+    if ($todo === null) {
+        throw new \RuntimeException('Todo not found');
     }
+
+    return $todo;
 }
+}
+
 
