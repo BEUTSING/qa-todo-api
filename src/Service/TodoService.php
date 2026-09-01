@@ -4,12 +4,14 @@ namespace App\Service;
 
 use App\Entity\Todo;
 use App\Repository\TodoRepository;
+use Doctrine\ORM\EntityManagerInterface;
 
 class TodoService
 {
+
     public  function __construct(
-        private  TodoRepository $todoRepository
-    )
+        private TodoRepository $todoRepository,
+        private EntityManagerInterface $entityManager )
     {
     }
 
@@ -30,6 +32,17 @@ class TodoService
 
     return $todo;
 }
+
+     public function createTodo(string $title): Todo
+     {
+        $todo = new Todo();
+        $todo->setTitle($title);
+
+        $this->entityManager->persist($todo);
+        $this->entityManager->flush();
+
+        return $todo;
+     }
 }
 
 

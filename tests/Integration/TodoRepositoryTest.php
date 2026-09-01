@@ -76,7 +76,7 @@ public function testFindTodoReturnsNullWhenTodoDoesNotExist(): void
 }
 
 // user the setUp() method to initialize the entity manager and repository for integration tests. This avoids repeating the same code in each test method.
-public function testCreateTodo(): void
+public function testCreateTodoj(): void
 {
     $todo = new Todo();
     $todo->setTitle('Apprendre PHPUnit');
