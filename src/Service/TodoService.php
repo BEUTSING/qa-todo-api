@@ -32,6 +32,11 @@ class TodoService
 
     return $todo;
 }
+    // GET ALL
+    public function getAllTodos(): array
+    {
+        return $this->todoRepository->findAll();
+    }
 
      public function createTodo(string $title): Todo
      {
@@ -47,6 +52,27 @@ class TodoService
 
         return $todo;
      }
+
+     // UPDATE
+    public function updateTodo(int $id, string $title): Todo
+    {
+        $todo = $this->getTodo($id);
+
+        $todo->setTitle($title);
+
+        $this->entityManager->flush();
+
+        return $todo;
+    }
+
+    // DELETE
+    public function deleteTodo(int $id): void
+    {
+        $todo = $this->getTodo($id);
+
+        $this->entityManager->remove($todo);
+        $this->entityManager->flush();
+    }
 }
 
 
