@@ -35,6 +35,10 @@ class TodoService
 
      public function createTodo(string $title): Todo
      {
+
+    //  if (trim($title) === '') {
+    //    throw new \InvalidArgumentException('Todo title cannot be empty');
+    //  }
         $todo = new Todo();
         $todo->setTitle($title);
 

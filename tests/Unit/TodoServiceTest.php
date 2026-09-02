@@ -123,4 +123,28 @@ class TodoServiceTest extends TestCase
     $this->assertSame('Apprendre PHPUnit', $result->getTitle());
 }
 
+public function testCreateTodoThrowsExceptionWhenTitleIsEmpty(): void
+{
+    $repository = $this->createMock(TodoRepository::class);
+    $entityManager = $this->createMock(EntityManagerInterface::class);
+
+    $entityManager
+        ->expects($this->never())
+        ->method('persist');
+
+    $entityManager
+        ->expects($this->never())
+        ->method('flush');
+
+    $this->expectException(\InvalidArgumentException::class);
+    $this->expectExceptionMessage('Todo title cannot be empty');
+
+    $service = new TodoService(
+        $repository,
+        $entityManager
+    );
+
+    $service->createTodo('');
+}
+
 }
