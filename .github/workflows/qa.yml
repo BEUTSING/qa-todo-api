@@ -43,21 +43,12 @@ jobs:
         ports:
           - 3306:3306
 
-        # Vérifie que MySQL est bien démarré avant de continuer
+        # Vérification que MySQL est prêt avant de lancer les tests
         options: >-
-
-          # Commande permettant de vérifier que MySQL répond
-          --health-cmd="mysqladmin ping -h 127.0.0.1 -proot"
-
-          # Vérifie l'état de MySQL toutes les 10 secondes
-          --health-interval=10s
-
-          # Attend maximum 5 secondes pour chaque vérification
-          --health-timeout=5s
-
-          # Effectue jusqu'à 10 tentatives si MySQL n'est pas encore prêt
-          --health-retries=10
-
+            --health-cmd="mysqladmin ping -h 127.0.0.1 -proot"
+            --health-interval=10s
+            --health-timeout=5s
+            --health-retries=10
 
     # Variables d'environnement disponibles pendant le job
     env:
