@@ -1,26 +1,106 @@
+# Nom du workflow qui apparaîtra dans GitHub Actions
 name: QA Tests
 
+# Définit les événements qui déclenchent le workflow
 on:
-   push:
-   pull_request:
+
+  # Lance les tests lorsqu'on fait un git push
+  push:
+
+  # Lance également les tests lorsqu'une Pull Request est créée ou modifiée
+  pull_request:
+
+
+# Les jobs représentent les grandes étapes du workflow
 jobs:
- tests:
+
+  # Nom de notre job
+  tests:
+
+    # GitHub va exécuter ce job sur une machine Ubuntu
     runs-on: ubuntu-latest
+
+
+    # Services supplémentaires nécessaires aux tests
+    services:
+
+      # Nom du service : MySQL
+      mysql:
+
+        # Image Docker utilisée pour démarrer MySQL 8
+        image: mysql:8.0
+
+        # Variables de configuration de MySQL
+        env:
+
+          # Mot de passe du compte root de MySQL
+          MYSQL_ROOT_PASSWORD: root
+
+          # Base de données qui sera créée automatiquement
+          MYSQL_DATABASE: todo_test
+
+        # Port utilisé pour communiquer avec MySQL
+        ports:
+          - 3306:3306
+
+        # Vérifie que MySQL est bien démarré avant de continuer
+        options: >-
+
+          # Commande permettant de vérifier que MySQL répond
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -proot"
+
+          # Vérifie l'état de MySQL toutes les 10 secondes
+          --health-interval=10s
+
+          # Attend maximum 5 secondes pour chaque vérification
+          --health-timeout=5s
+
+          # Effectue jusqu'à 10 tentatives si MySQL n'est pas encore prêt
+          --health-retries=10
+
+
+    # Variables d'environnement disponibles pendant le job
     env:
+
+      # Adresse de connexion utilisée par Symfony et Doctrine
       DATABASE_URL: mysql://root:root@127.0.0.1:3306/todo_test
+
+
+    # Liste des étapes exécutées dans le job
     steps:
+
+      # Récupère le code de notre projet depuis GitHub
       - name: Checkout
         uses: actions/checkout@v4
 
+
+      # Installe et configure PHP sur le runner GitHub
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
+
+        # Paramètres de configuration de PHP
         with:
+
+          # Version de PHP utilisée pour les tests
           php-version: '8.2'
+
+          # Extensions PHP nécessaires au projet Symfony
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+
+          # Nous ne faisons pas de calcul de couverture de code pour le moment
           coverage: none
 
+
+      # Installe les dépendances du projet avec Composer
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
 
+
+      # Crée les tables de la base de données de test
+      - name: Create database schema
+        run: php bin/console doctrine:schema:create --env=test
+
+
+      # Lance tous les tests PHPUnit
       - name: Run PHPUnit
         run: php bin/phpunit
