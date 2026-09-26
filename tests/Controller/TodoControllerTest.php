@@ -25,6 +25,21 @@ class TodoControllerTest extends WebTestCase
 
         // Vérifier le code HTTP
         $this->assertResponseStatusCodeSame(201);
+        // Créer le deuxième Todo
+    $client->request(
+        'POST',
+        '/api/todos',
+        [],
+        [],
+        [
+            'CONTENT_TYPE' => 'application/json',
+        ],
+        json_encode([
+            'title' => 'Deuxième Todo',
+        ])
+    );
+
+    $this->assertResponseStatusCodeSame(201);
 
         // Récupérer la réponse JSON
         $data = json_decode(
@@ -197,46 +212,52 @@ public function testGetTodoById(): void
     );
 }
 // Test de suppression d'un Todo
-    public function testDeleteTodo(): void
+   public function testDeleteTodo(): void
 {
     $client = static::createClient();
 
-    // // Créer le Todo
-    // $client->request(
-    //     'POST',
-    //     '/api/todos',
-    //     [],
-    //     [],
-    //     [
-    //         'CONTENT_TYPE' => 'application/json',
-    //     ],
-    //     json_encode([
-    //         'title' => 'Todo à supprimer',
-    //     ])
-    // );
-
-    // $this->assertResponseStatusCodeSame(201);
-
-    // $data = json_decode(
-    //     $client->getResponse()->getContent(),
-    //     true
-    // );
-
-    // $id = $data['id'];
-
-    // Supprimer le Todo
+    // Créer le Todo à supprimer
     $client->request(
-        'DELETE',
-        '/api/todos/10' //. $id
+        'POST',
+        '/api/todos',
+        [],
+        [],
+        [
+            'CONTENT_TYPE' => 'application/json',
+        ],
+        json_encode([
+            'title' => 'Todo à supprimer',
+        ])
     );
 
+    // Vérifier que le Todo a bien été créé
+    $this->assertResponseStatusCodeSame(201);
+
+    // Récupérer les données du Todo créé
+    $data = json_decode(
+        $client->getResponse()->getContent(),
+        true
+    );
+
+    // Récupérer l'ID généré par la base de données
+    $id = $data['id'];
+
+    // Supprimer le Todo que nous venons de créer
+    $client->request(
+        'DELETE',
+        '/api/todos/' . $id
+    );
+
+    // Vérifier que la suppression a réussi
     $this->assertResponseStatusCodeSame(200);
 
+    // Récupérer la réponse JSON
     $result = json_decode(
         $client->getResponse()->getContent(),
         true
     );
 
+    // Vérifier le message de succès
     $this->assertSame(
         'Todo deleted successfully',
         $result['message']
